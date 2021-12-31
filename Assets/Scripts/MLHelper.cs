@@ -147,7 +147,7 @@ public class MLTrader
     {
         List<float> observation = new List<float>();
 
-        for (int i = _index; i >= _index - _observationLength; i--)
+        for (int i = _index+2; i > _index - _observationLength; i--)
             observation.AddRange(_rates[i].ToFloat());
 
         _index++;
