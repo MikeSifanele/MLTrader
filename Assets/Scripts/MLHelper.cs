@@ -124,14 +124,13 @@ public class MLTrader
 {
     #region Private fields
     private Rates[] _rates;
-    private readonly int _rewardLength = 1;
     private readonly int _observationLength = 50;
     private int _index;
     #endregion
     #region Public properties
     public int CurrentStepIndex => _index - _observationLength;
     public bool IsLastStep => _index == MaximumRates;
-    public int MaximumRates => _rates.Length - _rewardLength;
+    public int MaximumRates => _rates.Length;
     public int MaximumRewards => MaximumRates - _observationLength;
     public int Target => (int)_rates[_index].Signal.Value;
     #endregion
