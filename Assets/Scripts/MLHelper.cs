@@ -69,6 +69,8 @@ public class MLHelper : Agent
 
         Debug.Log($"Episode ended: {_epoch}\nReward: {rewardString}/{maximumRewardString}\nAccuracy: {reward / maximumReward * 100:f1}%\nAverage Accuracy: {_accuracySum / _epoch:f1}%");
 
+        _trader.Reset();
+
         EndEpisode();
     }
 }
