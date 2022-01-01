@@ -38,9 +38,12 @@ public class MLHelper : Agent
     }
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var reward = _trader.GetReward(_trader.Target);
+        int action = _trader.Target;
+        var reward = _trader.GetReward(action);
 
-        AddReward(reward);
+        ActionSegment<int> discreteActions = actionsOut.DiscreteActions;
+
+        discreteActions[0] = action;
 
         if (reward == 1)
             Debug.Log($"Heuristically moved to Step no: {_trader.CurrentStepIndex}");
