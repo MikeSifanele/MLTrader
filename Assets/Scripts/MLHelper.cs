@@ -14,6 +14,7 @@ public class MLHelper : Agent
     private readonly MLTrader _trader = new MLTrader();
     public override void OnEpisodeBegin()
     {
+        Debug.Log("Episode started.");
         _trader.Reset();
     }
     public override void CollectObservations(VectorSensor sensor)
