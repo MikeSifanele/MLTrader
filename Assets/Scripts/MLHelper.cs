@@ -173,24 +173,40 @@ public class MLTrader
         switch ((SignalEnum)action)
         {
             case SignalEnum.FastPeak:
+                if(signal == SignalEnum.Neutral)
+                    return -100;
+                if(signal == SignalEnum.SlowPeak)
+                    return -1;
                 if (signal == SignalEnum.FastValley)
                     return -10;
                 else if (signal == SignalEnum.SlowValley)
                     return -100;
                 break;
             case SignalEnum.FastValley:
+                if (signal == SignalEnum.Neutral)
+                    return -100;
+                if (signal == SignalEnum.SlowValley)
+                    return -1;
                 if (signal == SignalEnum.FastPeak)
                     return -10;
                 else if (signal == SignalEnum.SlowPeak)
                     return -100;
                 break;
             case SignalEnum.SlowPeak:
+                if (signal == SignalEnum.Neutral)
+                    return -100;
+                if (signal == SignalEnum.FastPeak)
+                    return -1;
                 if (signal == SignalEnum.FastValley)
                     return -10;
                 else if (signal == SignalEnum.SlowValley)
                     return -100;
                 break;
             case SignalEnum.SlowValley:
+                if (signal == SignalEnum.Neutral)
+                    return -100;
+                if (signal == SignalEnum.FastValley)
+                    return -1;
                 if (signal == SignalEnum.FastPeak)
                     return -10;
                 else if (signal == SignalEnum.SlowPeak)
