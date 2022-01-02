@@ -120,13 +120,17 @@ public class MLTrader
     private Rates[] _rates;
     private readonly int _observationLength = 50;
     private int _index;
+    /// <summary>
+    /// Active or current non-neutral signal.
+    /// </summary>
+    private SignalEnum _currentSignal;
     #endregion
     #region Public properties
     public int CurrentStepIndex => _index - _observationLength;
     public bool IsLastStep => _index == MaximumRates - 1;
     public int MaximumRates => _rates.Length;
     public int MaximumRewards => MaximumRates - _observationLength;
-    public int Target => (int)_rates[_index].Signal.Value;
+    public SignalEnum CurrentSignal => _currentSignal;
     #endregion
     private static MLTrader _instance;
     public static MLTrader Instance => _instance ?? (_instance = new MLTrader());
@@ -143,6 +147,9 @@ public class MLTrader
                 rates.Add(new Rates(streamReader.ReadLine().Split(',')));
             }
 
+            if (rates[0].Signal > 0)
+                _currentSignal = rates[0].Signal;
+
             _rates = rates.ToArray();
         }
 
@@ -152,74 +159,29 @@ public class MLTrader
     {
         List<float> observation = new List<float>();
 
-        for (int i = _index+1; i > _index - _observationLength; i--)
+        for (int i = _index - (_observationLength - 1); i <= _index; i++)
+        {
             observation.AddRange(_rates[i].ToFloat());
+
+            if (_rates[i].Signal != SignalEnum.Neutral)
+                _currentSignal = _rates[i].Signal;
+        }
 
         _index++;
 
         return observation.ToArray();
     }
 
-    public int GetReward(int action)
+    public float GetReward(int action)
     {
-        SignalEnum signal = _rates[_index].Signal.Value;
-
-        switch ((SignalEnum)action)
-        {
-            case SignalEnum.FastPeak:
-                if(signal == SignalEnum.Neutral)
-                    return -100;
-                if(signal == SignalEnum.SlowPeak)
-                    return -1;
-                if (signal == SignalEnum.FastValley)
-                    return -10;
-                else if (signal == SignalEnum.SlowValley)
-                    return -100;
-                break;
-            case SignalEnum.FastValley:
-                if (signal == SignalEnum.Neutral)
-                    return -100;
-                if (signal == SignalEnum.SlowValley)
-                    return -1;
-                if (signal == SignalEnum.FastPeak)
-                    return -10;
-                else if (signal == SignalEnum.SlowPeak)
-                    return -100;
-                break;
-            case SignalEnum.SlowPeak:
-                if (signal == SignalEnum.Neutral)
-                    return -100;
-                if (signal == SignalEnum.FastPeak)
-                    return -1;
-                if (signal == SignalEnum.FastValley)
-                    return -10;
-                else if (signal == SignalEnum.SlowValley)
-                    return -100;
-                break;
-            case SignalEnum.SlowValley:
-                if (signal == SignalEnum.Neutral)
-                    return -100;
-                if (signal == SignalEnum.FastValley)
-                    return -1;
-                if (signal == SignalEnum.FastPeak)
-                    return -10;
-                else if (signal == SignalEnum.SlowPeak)
-                    return -100;
-                break;
-            case SignalEnum.Neutral:
-                if (signal == SignalEnum.FastPeak)
-                    return -10;
-                else if (signal == SignalEnum.SlowPeak)
-                    return -100;
-                else if (signal == SignalEnum.FastValley)
-                    return -10;
-                else if (signal == SignalEnum.SlowValley)
-                    return -100;
-                break;
-        }
-
-        return 1;
+        return GetPoints(action) ?? 0f;
     }
+    private float? GetPoints(int action, float? openPrice = null, float? closePrice = null)
+    {
+        openPrice ??= _rates[_index].Open;
+        closePrice ??= _rates[_index].Close;
 
+        return action == 0 ? (closePrice - openPrice) * 10 : (openPrice - closePrice) * 10;
+    }
     public void Reset() => _index = _observationLength;
 }
