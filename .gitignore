@@ -26,3 +26,5 @@ results/train/run_logs/
 MLTrader.sln
 
 *.0
+
+*.meta
