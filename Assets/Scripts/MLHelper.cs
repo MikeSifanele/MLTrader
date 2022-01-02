@@ -91,7 +91,9 @@ public struct Rates
     public float High;
     public float Low;
     public float Close;
-    public Signal Signal;
+    public SignalEnum Signal;
+    public float FastEma;
+    public float SlowEma;
 
     public Rates(string[] data)
     {
@@ -102,28 +104,14 @@ public struct Rates
         Low = float.Parse(data[3], CultureInfo.InvariantCulture.NumberFormat);
         Close = float.Parse(data[4], CultureInfo.InvariantCulture.NumberFormat);
 
-        Signal = new Signal(data);
+        Signal = (SignalEnum)int.Parse(data[5]);
+
+        FastEma = float.Parse(data[6], CultureInfo.InvariantCulture.NumberFormat);
+        SlowEma = float.Parse(data[7], CultureInfo.InvariantCulture.NumberFormat);
     }
     public float[] ToFloat()
     {
-        return new float[] { Open, High, Low, Close };
-    }
-}
-public class Signal
-{
-    public SignalEnum Value;
-    public Signal(string[] data)
-    {
-        if (data[5] != "0")
-            Value = SignalEnum.FastValley;
-        else if (data[6] != "0")
-            Value = SignalEnum.SlowValley;
-        else if (data[7] != "0")
-            Value = SignalEnum.FastPeak;
-        else if (data[8] != "0")
-            Value = SignalEnum.SlowPeak;
-        else
-            Value = SignalEnum.Neutral;
+        return new float[] { FastEma, SlowEma, Open, High, Low, Close };
     }
 }
 public class MLTrader
